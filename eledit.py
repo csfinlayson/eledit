@@ -9,29 +9,41 @@ def txtget(filename):
         file = open(filename, 'r')
         file_contents = file.read()
         file.close()
+        wr = open(filename + '.cal', 'w')
+        wr.write(file_contents)
+        wr.close()
     except:
         file_contents = 'Error reading file'
     return file_contents
+
+def writefile(filename, content):
+    try:
+        file = open(filename, 'w')
+        file.write(content)
+        file.close()
+    except:
+        print("Oops, something went wrong!")
+
 
 def menu():
     parser = argparse.ArgumentParser(description='Easily edit an elasticsearch yml file')
     parser.add_argument('-f', action='store', dest='location', default='/etc/elasticsearch/elasticsearch.yml',
                         help='Location of elastic yml file to edit')
-    parser.add_argument('-i', action='store', dest='ip', default='127.0.0.1', help='IP for elastic bind')
+    parser.add_argument('-i', action='store', dest='ip', help='IP for elastic bind')
     parser.add_argument('-z', action='store', dest='node', default='127.0.0.1', help='Single IP for node discovery')
     parser.add_argument('-Z', action='store', dest='zen_location', help='Path to file with IPs for zen discovery')
     results = parser.parse_args()
     return results
 
-def replace_ip(ipAddr, location):
-    contents = txtget(location)
+def replace_ip(ipAddr):
     modified = re.sub('#{0,1}network.host:[\d \.]*', 'network.host: '+ipAddr, contents)
-    print(modified)
+    return modified
 
 def main():
     results = menu()
-    print(results.ip)
-    replace_ip(results.ip, results.location)
+    contents = txtget(results.location)
+    if results.ip:
+        replace_ip(results.ip)
 
 if __name__ == "__main__":
     main()
