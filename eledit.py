@@ -42,7 +42,7 @@ def menu():
     results = parser.parse_args()
     return results
 
-def replace_ip(ipAddr):
+def replace_ip(ipAddr, contents):
     """Replaces the network host IP Address in the elastic yaml file"""
     modified = re.sub('#{0,1}network.host:[\d \.]*', 'network.host: '+ipAddr, contents)
     return modified
@@ -52,7 +52,8 @@ def main():
     results = menu()
     contents = txtget(results.location)
     if results.ip:
-        replace_ip(results.ip)
+        contents = replace_ip(results.ip, contents)
+    writefile(results.location, contents)
 
 if __name__ == "__main__":
     main()
